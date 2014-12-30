@@ -52,9 +52,9 @@ public class MetaProtein {
 	}
 	
 	/**
-	 * Metoda zwracajaca identyfikator rodziny
+	 * Metoda zwracajaca identyfikator metabialka
 	 *
-	 * @return      identyfikator rodziny
+	 * @return      identyfikator metabialka
 	 */
 	public String getId()
 	{
@@ -75,7 +75,7 @@ public class MetaProtein {
 	}
 	
 	/**
-	 * Metoda zwracajaca liczbe bialek w rodzinie
+	 * Metoda zwracajaca liczbe bialek w metabialku
 	 *
 	 * @return	liczba bialek
 	 */

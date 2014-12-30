@@ -266,6 +266,9 @@ public class GraphEngine {
 	{
 		Experiment								experiment=null;	//obiekt przechowujacy dane z eksperymentu
 		ProPepGraph								peptide_graph=null;			//graf zaleznosci bialko-bialko wynikajacych z liczby wspolnych peptydow
+		ProPepGraph								protein_graph=null;
+		
+		
 		String filename		 = "C:\\Users\\pawel.kracki\\Desktop\\mgr\\Histonynew\\Histony.exp";
 		Sample										mergedSample=null;
 		LinkedHashMap<String,MsMsPeptideHit>		peptidesHash=null;
@@ -291,9 +294,13 @@ public class GraphEngine {
 				mergedSample=(experiment.getSamples().length>1)?SampleTools.mergeSamples("Merged sample",experiment.getSamples(),null,0.0,0.0):experiment.getSamples()[0];
 				proteinHash=mergedSample.getProteins();
 				peptidesHash=mergedSample.getPeptides();
+				
+				//peptide_graph = GraphEngine.createPeptidesGraph(proteinHash, peptidesHash);
+				//GraphEngine.plotProteinGraph(peptide_graph);
+				
+				//protein_graph = GraphEngine.createProteinsGraph(proteinHash, peptidesHash);
 				//GraphEngine.plotProteinGraph(protein_graph);
-				peptide_graph = GraphEngine.createPeptidesGraph(proteinHash, peptidesHash);
-				GraphEngine.plotProteinGraph(peptide_graph);
+				
 		}
 			
 		}catch (Exception e)
@@ -303,6 +310,9 @@ public class GraphEngine {
 		
 		try{
 			ProPepGraph graph =  GraphEngine.createProPepGraph(proteinHash, peptidesHash);
+			GraphSeparator graphSepar = new GraphSeparator(graph);
+			graphSepar.dfs();
+			GraphEngine.plotGraph(graph);
 			
 		}
 		catch (Exception mse)
@@ -402,40 +412,13 @@ static public ProPepGraph createProPepGraph(LinkedHashMap<String,MsMsProteinHit>
 	MsMsPeptideHit 								peptideHit=null;
 	iterator=proteinHash.entrySet().iterator();
 	System.out.print("Begin:");
-	String styleSheet =
-			//"graph {  fill-mode: gradient-vertical; fill-color: purple, blue, green, yellow, orange, red; }" +
-		    "node {" +
-		    "		size: 19px;" +
-			    "}" +
-		    "node.protein {" +
-		    "		size: 25px;" +
-		  	"		fill-color:yellow,orange;" +  
-			"		fill-mode:gradient-radial;" +
-				"}" +
-				"node.peptide {" +
-				"		size: 15px;" +
-		  	"		fill-color:orange,red;" +  
-			"		fill-mode:gradient-radial;" +
-				"}" +			  	
-		    "node.marked {" +
-		    "       fill-color: blue;" +
-		    "}";
+
 	System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
 	ProPepGraph graph = new ProPepGraph("Proteins");
 	graph.setStrict(false);
     graph.setAutoCreate(true);
-    graph.addAttribute("ui.stylesheet", styleSheet);
-   // graph.display();
-    Viewer viewer = graph.display();
-    View view = viewer.getDefaultView();
-    view.resizeFrame(800, 600);
-    //view.getCamera().setViewCenter(440000, 2503000, 0);
-    view.getCamera().setViewPercent(0.25);
-    
-    ViewerPipe fromViewer = viewer.newViewerPipe();
-    Clicker clicker = new Clicker(graph);
-    fromViewer.addViewerListener(clicker);
-    fromViewer.addSink(graph);
+
+  
 
     
 	while(iterator.hasNext())
@@ -479,12 +462,50 @@ static public ProPepGraph createProPepGraph(LinkedHashMap<String,MsMsProteinHit>
 		}
 		//this.writeLine(writer,"");
 	}
-	viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.CLOSE_VIEWER);
+
+	return graph;
+	}
+
+static public void plotGraph(ProPepGraph graph){
+	String styleSheet =
+			//"graph {  fill-mode: gradient-vertical; fill-color: purple, blue, green, yellow, orange, red; }" +
+		    "node {" +
+		    "		size: 19px;" +
+			    "}" +
+		    "node.protein {" +
+		    "		size: 25px;" +
+		  	"		fill-color:yellow,orange;" +  
+			"		fill-mode:gradient-radial;" +
+				"}" +
+				"node.peptide {" +
+				"		size: 15px;" +
+		  	"		fill-color:orange,red;" +  
+			"		fill-mode:gradient-radial;" +
+				"}" +			  	
+		    "node.marked {" +
+		    "       fill-color: blue;" +
+		    "}";
+			
+	    graph.addAttribute("ui.stylesheet", styleSheet);
+		
+		
+		 // graph.display();
+    Viewer viewer = graph.display();
+    View view = viewer.getDefaultView();
+    view.resizeFrame(800, 600);
+    //view.getCamera().setViewCenter(440000, 2503000, 0);
+    view.getCamera().setViewPercent(0.25);
+    
+    ViewerPipe fromViewer = viewer.newViewerPipe();
+    Clicker clicker = new Clicker(graph);
+    fromViewer.addViewerListener(clicker);
+    fromViewer.addSink(graph);
+	
+		viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.CLOSE_VIEWER);
 	 while(clicker.loop) {
             fromViewer.pump();
 	 }
-	return graph;
-	}
+}
 
 }
 

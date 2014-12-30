@@ -6,7 +6,6 @@ import mscanlib.ms.msms.MsMsPeptideHit;
 
 public class MetaPeptide {
 
-	
 	public final static int ID_LENGTH=6;
 	
 	private String			mId="";
@@ -53,9 +52,9 @@ public class MetaPeptide {
 	}
 	
 	/**
-	 * Metoda zwracajaca identyfikator rodziny
+	 * Metoda zwracajaca identyfikator metapeptydu
 	 *
-	 * @return      identyfikator rodziny
+	 * @return      identyfikator metapaptydu
 	 */
 	public String getId()
 	{
@@ -69,16 +68,15 @@ public class MetaPeptide {
 			return(false);
 		else
 		{
-//			protein.addFamily(this);
 			this.mPeptideList.put(peptide.getSequence().toString(), peptide);
 		}
 		return(true);
 	}
 	
 	/**
-	 * Metoda zwracajaca liczbe bialek w rodzinie
+	 * Metoda zwracajaca liczbe peptydow w metapeptydzie
 	 *
-	 * @return	liczba bialek
+	 * @return	liczba peptydow
 	 */
 	public int getPeptideCount()
 	{
