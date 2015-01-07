@@ -273,7 +273,6 @@ public class GraphEngine {
 		Sample										mergedSample=null;
 		LinkedHashMap<String,MsMsPeptideHit>		peptidesHash=null;
 		LinkedHashMap<String,MsMsProteinHit>		proteinHash=null;
-		System.out.println("SSDSD");
 	
 		try{
 			/*
@@ -431,12 +430,12 @@ static public ProPepGraph createProPepGraph(LinkedHashMap<String,MsMsProteinHit>
 		
 		this.writeLine(writer,"Protein experimental peptides:");
 		*/
-		if (proteinHit.getScore()<300) continue;
+//		if (proteinHit.getScore()<300) continue;
 	//	System.out.print("\nProteinID: " + proteinHit.getId().toString() + ": ");
 		graph.addNode(proteinHit.getId().toString());
 		graph.getNode(proteinHit.getId().toString()).setAttribute("ui.label",proteinHit.getId().toString());
 		graph.getNode(proteinHit.getId().toString()).setAttribute("ui.class", "protein");
-		
+		graph.getNode(proteinHit.getId().toString()).setAttribute("proteinHit", proteinHit);
 		graph.getNode(proteinHit.getId().toString()).setAttribute("ui.color", 0.5);
 		for (int i=0;i<proteinHit.getPeptidesCount();i++)
 		{
@@ -446,6 +445,7 @@ static public ProPepGraph createProPepGraph(LinkedHashMap<String,MsMsProteinHit>
 				graph.addNode(peptideHit.getSequence().toString());
 				graph.getNode(peptideHit.getSequence().toString()).setAttribute("ui.class", "peptide");
 				graph.getNode(peptideHit.getSequence().toString()).setAttribute("ui.color", 0.5);
+				graph.getNode(peptideHit.getSequence().toString()).setAttribute("peptideHit", peptideHit);
 				
 			
 			
@@ -483,7 +483,8 @@ static public void plotGraph(ProPepGraph graph){
 			"		fill-mode:gradient-radial;" +
 				"}" +			  	
 		    "node.marked {" +
-		    "       fill-color: blue;" +
+		    "       fill-color: blue,green;" +
+		    "		fill-mode:gradient-radial;" +
 		    "}";
 			
 	    graph.addAttribute("ui.stylesheet", styleSheet);
@@ -501,7 +502,7 @@ static public void plotGraph(ProPepGraph graph){
     fromViewer.addViewerListener(clicker);
     fromViewer.addSink(graph);
 	
-		viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.CLOSE_VIEWER);
+		viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.EXIT);
 	 while(clicker.loop) {
             fromViewer.pump();
 	 }

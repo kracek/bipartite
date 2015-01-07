@@ -1,14 +1,16 @@
 package mscanlib.ms.mass.bipartite;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.TreeSet;
 import java.util.Vector;
 
 
 public class GraphSeparator {
 
 	ProPepGraph graph;
-	public Vector< Vector<ProPepNode> >	subGraphList=null;
+	public Vector< TreeSet<ProPepNode> >	subGraphList=null;
 	Collection<ProPepNode> nodeSet = null;
 	int counter=0;
 	
@@ -16,7 +18,7 @@ public class GraphSeparator {
 	public GraphSeparator(ProPepGraph graph){
 		this.graph = graph;
 		nodeSet = this.graph.getNodeSet();
-		subGraphList = new Vector< Vector<ProPepNode> >();
+		subGraphList = new Vector< TreeSet<ProPepNode> >();
 	}
 	
 	public  void dfs(){
@@ -35,35 +37,44 @@ public class GraphSeparator {
 				//node.getDepthFirstIterator() 
 		
 		}
+		// set blue color
 		
 		nodeIterator= subGraphList.get(0).iterator();
+		
+		nodeIterator.next();
+		nodeIterator.next();
+		nodeIterator.next();
+		
+		
 		while (nodeIterator.hasNext()){
 			node = nodeIterator.next();
 			String tmp = node.getAttribute("ui.class");
+			System.out.println(tmp + " " + node);
 		node.setAttribute("ui.class", "marked, " + tmp);
 		}
 		
 	}
 	
    public void addNodetoSubgraph(int counter, ProPepNode node){
-	   System.out.println(node.toString() + " 1  " + Integer.toString(counter));
+
 	  try {subGraphList.get(counter); 
 	  }catch (Exception E){
-		   subGraphList.add(new Vector<ProPepNode> ());
+
+		   subGraphList.add(new TreeSet<ProPepNode> ());
 	   }
-	   System.out.println(node.toString() + " 2  " + Integer.toString(counter));
 	   
-	   if (!subGraphList.get(counter).contains(node))
+	   if (!subGraphList.get(counter).contains(node)){
+
 	   subGraphList.get(counter).add(node);
+   }
    }
 	
 	public void dfs(ProPepNode node){
 		node.setAttribute("visit", counter);
-		System.out.println(node.toString() + " " + Integer.toString(counter));
 		this.addNodetoSubgraph(counter, node);
 		
 		Iterator<ProPepNode> nodeIterator = node.getNeighborNodeIterator();
-		
+			
 		while (nodeIterator.hasNext()){
 			node = nodeIterator.next();
 		if (!node.hasAttribute("visit")){

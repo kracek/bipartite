@@ -8,10 +8,10 @@ import org.graphstream.graph.implementations.AdjacencyListGraph;
 public class ProPepGraph extends AdjacencyListGraph {
 
 	/**
-	 * Creates an empty graph.
+	 * Tworzy pusty graf.
 	 * 
 	 * @param id
-	 *            Unique identifier of the graph.
+	 *            Unikalny identyfikator grafu.
 	 * @param strictChecking
 	 *            If true any non-fatal error throws an exception.
 	 * @param autoCreate

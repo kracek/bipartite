@@ -4,6 +4,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import mscanlib.ms.msms.MsMsPeptideHit;
+import mscanlib.ms.msms.MsMsProteinHit;
+
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.AbstractEdge;
@@ -11,7 +14,7 @@ import org.graphstream.graph.implementations.AbstractGraph;
 import org.graphstream.graph.implementations.AbstractNode;
 import org.graphstream.graph.implementations.AdjacencyListNode;
 
-public class ProPepNode extends AdjacencyListNode {
+public class ProPepNode extends AdjacencyListNode implements Comparable<ProPepNode>  {
 	protected static class TwoEdges {
 		AbstractEdge in, out;
 	}
@@ -88,4 +91,23 @@ public class ProPepNode extends AdjacencyListNode {
 		return (Iterator<T>) Collections.unmodifiableSet(neighborMap.keySet())
 				.iterator();
 	}
+
+	@Override
+	public int compareTo(ProPepNode node0) {
+		int diff = -1;
+		if (this.hasAttribute("proteinHit")) { 
+				if ( node0.hasAttribute("proteinHit")) {
+			diff = -( ((MsMsProteinHit) this.getAttribute("proteinHit")).getPeptidesCount() - ((MsMsProteinHit) node0.getAttribute("proteinHit")).getPeptidesCount() );
+				if ( diff == 0)
+					diff = -1;
+			}
+				return diff; }
+		return -diff;
+	
+	}
+	
+	public MsMsProteinHit getProteinHit(){
+		return this.getAttribute("proteinHit");
+	}
+
 }
