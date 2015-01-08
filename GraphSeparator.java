@@ -1,21 +1,25 @@
 package mscanlib.ms.mass.bipartite;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.Vector;
 
 
+
 public class GraphSeparator {
 
-	ProPepGraph graph;
+	ProPepGraph graph = new ProPepGraph("tmp");
+	ProPepNode node;
 	public Vector< TreeSet<ProPepNode> >	subGraphList=null;
 	Collection<ProPepNode> nodeSet = null;
 	int counter=0;
 	
 	
 	public GraphSeparator(ProPepGraph graph){
+		
+	
+		
 		this.graph = graph;
 		nodeSet = this.graph.getNodeSet();
 		subGraphList = new Vector< TreeSet<ProPepNode> >();
@@ -24,7 +28,7 @@ public class GraphSeparator {
 	public  void dfs(){
 		Iterator<ProPepNode> nodeIterator = nodeSet.iterator();
 		
-		ProPepNode node;
+		
 		
 		while (nodeIterator.hasNext()){
 			
@@ -37,6 +41,7 @@ public class GraphSeparator {
 				//node.getDepthFirstIterator() 
 		
 		}
+		
 		// set blue color
 		
 		nodeIterator= subGraphList.get(0).iterator();
@@ -55,23 +60,12 @@ public class GraphSeparator {
 		
 	}
 	
-   public void addNodetoSubgraph(int counter, ProPepNode node){
-
-	  try {subGraphList.get(counter); 
-	  }catch (Exception E){
-
-		   subGraphList.add(new TreeSet<ProPepNode> ());
-	   }
-	   
-	   if (!subGraphList.get(counter).contains(node)){
-
-	   subGraphList.get(counter).add(node);
-   }
-   }
 	
 	public void dfs(ProPepNode node){
-		node.setAttribute("visit", counter);
+
+		node.addAttribute("visit", counter);
 		this.addNodetoSubgraph(counter, node);
+
 		
 		Iterator<ProPepNode> nodeIterator = node.getNeighborNodeIterator();
 			
@@ -84,4 +78,17 @@ public class GraphSeparator {
 		
 	}
 	
+	   public void addNodetoSubgraph(int counter, ProPepNode node){
+
+			  try {subGraphList.get(counter); 
+			  }catch (Exception E){
+
+				   subGraphList.add(new TreeSet<ProPepNode> ());
+			   }
+			   
+			   if (!subGraphList.get(counter).contains(node)){
+
+			   subGraphList.get(counter).add(node);
+		   }
+		   }
 }

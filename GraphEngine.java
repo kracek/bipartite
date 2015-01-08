@@ -28,6 +28,17 @@ import org.graphstream.ui.swingViewer.ViewerPipe;
 
 
 public class GraphEngine {
+	
+	
+	Experiment								experiment=null;	//obiekt przechowujacy dane z eksperymentu
+//	ProPepGraph								peptide_graph=null;			//graf zaleznosci bialko-bialko wynikajacych z liczby wspolnych peptydow
+//	ProPepGraph								protein_graph=null;
+	ProPepNode node;
+	
+	String filename		 = "C:\\Users\\pawel.kracki\\Desktop\\mgr\\Histonynew\\Histony.exp";
+	Sample										mergedSample=null;
+	LinkedHashMap<String,MsMsPeptideHit>		peptidesHash=null;
+	LinkedHashMap<String,MsMsProteinHit>		proteinHash=null;
 
 	static public ProPepGraph createProteinsGraph(LinkedHashMap<String,MsMsProteinHit> proteinHash,LinkedHashMap<String,MsMsPeptideHit> peptidesHash)
 	{	
@@ -262,62 +273,86 @@ public class GraphEngine {
 		return(experiment);
 	}
 	
-	public static void main(String[] args)
-	{
-		Experiment								experiment=null;	//obiekt przechowujacy dane z eksperymentu
-		ProPepGraph								peptide_graph=null;			//graf zaleznosci bialko-bialko wynikajacych z liczby wspolnych peptydow
-		ProPepGraph								protein_graph=null;
-		
-		
-		String filename		 = "C:\\Users\\pawel.kracki\\Desktop\\mgr\\Histonynew\\Histony.exp";
-		Sample										mergedSample=null;
-		LinkedHashMap<String,MsMsPeptideHit>		peptidesHash=null;
-		LinkedHashMap<String,MsMsProteinHit>		proteinHash=null;
 	
-		try{
-			/*
-			 * Inicjalizacja map potrzebnych do odczytu eksperymentu
-			 */
-			MassTools.initMaps();
-			
-			/*
-			 * Odczyt eksperymentu
-			 */
-			if ((experiment=GraphEngine.readExperiment(filename))!=null)
-			{
-				System.out.println("Creating graph...");
-			
+	public GraphEngine(){
+		
+
+		
+			try{
 				/*
-				 * Tworzenie grafu
+				 * Inicjalizacja map potrzebnych do odczytu eksperymentu
 				 */
-				mergedSample=(experiment.getSamples().length>1)?SampleTools.mergeSamples("Merged sample",experiment.getSamples(),null,0.0,0.0):experiment.getSamples()[0];
-				proteinHash=mergedSample.getProteins();
-				peptidesHash=mergedSample.getPeptides();
+				MassTools.initMaps();
 				
-				//peptide_graph = GraphEngine.createPeptidesGraph(proteinHash, peptidesHash);
-				//GraphEngine.plotProteinGraph(peptide_graph);
+				/*
+				 * Odczyt eksperymentu
+				 */
+				if ((experiment=GraphEngine.readExperiment(filename))!=null)
+				{
+					System.out.println("Creating graph...");
 				
-				//protein_graph = GraphEngine.createProteinsGraph(proteinHash, peptidesHash);
-				//GraphEngine.plotProteinGraph(protein_graph);
+					/*
+					 * Tworzenie grafu
+					 */
+					mergedSample=(experiment.getSamples().length>1)?SampleTools.mergeSamples("Merged sample",experiment.getSamples(),null,0.0,0.0):experiment.getSamples()[0];
+					proteinHash=mergedSample.getProteins();
+					peptidesHash=mergedSample.getPeptides();
+					
+					//peptide_graph = GraphEngine.createPeptidesGraph(proteinHash, peptidesHash);
+					//GraphEngine.plotProteinGraph(peptide_graph);
+					
+					//protein_graph = GraphEngine.createProteinsGraph(proteinHash, peptidesHash);
+					//GraphEngine.plotProteinGraph(protein_graph);
+					
+			}
 				
-		}
+			}catch (Exception e)
+				{
+					System.out.println(e.getMessage());
+				}
 			
-		}catch (Exception e)
+			try{
+				ProPepGraph graph =  GraphEngine.createProPepGraph(proteinHash);
+				GraphSeparator graphSepar = new GraphSeparator(graph);
+				graphSepar.dfs();
+				
+				Iterator<ProPepNode> itek = graphSepar.subGraphList.get(0).iterator();
+				while (itek.hasNext()){
+					node = itek.next();
+					if (node.hasAttribute("proteinHit")) System.out.println(node.getProteinHit().getId() + node.getProteinHit().getPeptidesCount());
+				}
+				
+				VertexCover vc = new VertexCover();
+				Vector<Vector<MsMsProteinHit>> secik = vc.findCover(graph,graphSepar);
+				System.out.println(secik.size());
+				
+				Iterator<Vector<MsMsProteinHit>> mainIter = secik.iterator();
+				while (mainIter.hasNext()){
+					
+				Iterator<MsMsProteinHit> iterator = mainIter.next().iterator();
+				MsMsProteinHit hit;
+				while (iterator.hasNext()){
+					
+					hit = iterator.next();
+					if (hit !=  null)
+					System.out.println(hit.getId().toString() + " : " + hit.getScore());
+				}
+				}
+				GraphEngine.plotGraph(graph);
+				
+				
+				
+			}
+			catch (Exception mse)
 			{
-				System.out.println(e.getMessage());
+				System.out.println("ERROR: " + mse.toString());
 			}
 		
-		try{
-			ProPepGraph graph =  GraphEngine.createProPepGraph(proteinHash, peptidesHash);
-			GraphSeparator graphSepar = new GraphSeparator(graph);
-			graphSepar.dfs();
-			GraphEngine.plotGraph(graph);
-			
-		}
-		catch (Exception mse)
-		{
-			System.out.println("ERROR: " + mse.toString());
-		}
+	};
+	
+	public static void main(String[] args)
+	{
+		new GraphEngine();
 		}
 	 
 	/**
@@ -405,7 +440,7 @@ public class GraphEngine {
 		return(metaPeptideHash);
 	}	
 
-static public ProPepGraph createProPepGraph(LinkedHashMap<String,MsMsProteinHit> proteinHash,LinkedHashMap<String,MsMsPeptideHit> peptidesHash){
+static public ProPepGraph createProPepGraph(LinkedHashMap<String,MsMsProteinHit> proteinHash){
 	Iterator<Map.Entry<String,MsMsProteinHit>>	iterator=null;
 	MsMsProteinHit								proteinHit=null;
 	MsMsPeptideHit 								peptideHit=null;
@@ -415,7 +450,7 @@ static public ProPepGraph createProPepGraph(LinkedHashMap<String,MsMsProteinHit>
 	System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
 	ProPepGraph graph = new ProPepGraph("Proteins");
 	graph.setStrict(false);
-    graph.setAutoCreate(true);
+   // graph.setAutoCreate(true);
 
   
 
@@ -423,6 +458,8 @@ static public ProPepGraph createProPepGraph(LinkedHashMap<String,MsMsProteinHit>
 	while(iterator.hasNext())
 	{
 		proteinHit=iterator.next().getValue();
+
+		
 		/*
 		this.writeLine(writer,"Protein id", proteinHit.getId());
 		this.writeLine(writer,"Protein name", proteinHit.getName());
@@ -430,13 +467,14 @@ static public ProPepGraph createProPepGraph(LinkedHashMap<String,MsMsProteinHit>
 		
 		this.writeLine(writer,"Protein experimental peptides:");
 		*/
-//		if (proteinHit.getScore()<300) continue;
+		if (proteinHit.getScore() == 0) continue;
 	//	System.out.print("\nProteinID: " + proteinHit.getId().toString() + ": ");
 		graph.addNode(proteinHit.getId().toString());
 		graph.getNode(proteinHit.getId().toString()).setAttribute("ui.label",proteinHit.getId().toString());
 		graph.getNode(proteinHit.getId().toString()).setAttribute("ui.class", "protein");
-		graph.getNode(proteinHit.getId().toString()).setAttribute("proteinHit", proteinHit);
+		graph.getNode(proteinHit.getId().toString()).addAttribute("proteinHit", proteinHit);
 		graph.getNode(proteinHit.getId().toString()).setAttribute("ui.color", 0.5);
+
 		for (int i=0;i<proteinHit.getPeptidesCount();i++)
 		{
 			peptideHit=proteinHit.getPeptide(i);
@@ -445,7 +483,7 @@ static public ProPepGraph createProPepGraph(LinkedHashMap<String,MsMsProteinHit>
 				graph.addNode(peptideHit.getSequence().toString());
 				graph.getNode(peptideHit.getSequence().toString()).setAttribute("ui.class", "peptide");
 				graph.getNode(peptideHit.getSequence().toString()).setAttribute("ui.color", 0.5);
-				graph.getNode(peptideHit.getSequence().toString()).setAttribute("peptideHit", peptideHit);
+				graph.getNode(peptideHit.getSequence().toString()).addAttribute("peptideHit", peptideHit);
 				
 			
 			

@@ -93,4 +93,8 @@ public class MetaPeptide {
 
 		return(currentPeptide);
 	}
+
+	public String getName() {
+		return mName;
+	}
 }

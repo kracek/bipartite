@@ -94,4 +94,8 @@ public class MetaProtein {
 
 		return(currentProtein);
 	}
+	
+	public String getName() {
+		return mName;
+	}
 }

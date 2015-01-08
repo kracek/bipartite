@@ -97,7 +97,8 @@ public class ProPepNode extends AdjacencyListNode implements Comparable<ProPepNo
 		int diff = -1;
 		if (this.hasAttribute("proteinHit")) { 
 				if ( node0.hasAttribute("proteinHit")) {
-			diff = -( ((MsMsProteinHit) this.getAttribute("proteinHit")).getPeptidesCount() - ((MsMsProteinHit) node0.getAttribute("proteinHit")).getPeptidesCount() );
+		//	diff = -( ((MsMsProteinHit) this.getAttribute("proteinHit")).getPeptidesCount() - ((MsMsProteinHit) node0.getAttribute("proteinHit")).getPeptidesCount() );
+					diff = -(  this.getDegree() - node0.getDegree() );
 				if ( diff == 0)
 					diff = -1;
 			}
@@ -106,8 +107,14 @@ public class ProPepNode extends AdjacencyListNode implements Comparable<ProPepNo
 	
 	}
 	
-	public MsMsProteinHit getProteinHit(){
+	public MsMsProteinHit getProteinHit() throws Exception{
+		if (this.hasAttribute("proteinHit"))
 		return this.getAttribute("proteinHit");
+		else throw new Exception("Wrong class");
+	}
+	
+	public MsMsPeptideHit getPeptideHit(){
+		return this.getAttribute("peptideHit");
 	}
 
 }
