@@ -9,7 +9,7 @@ import java.util.Vector;
 
 public class GraphSeparator {
 
-	ProPepGraph graph = new ProPepGraph("tmp");
+	ProPepGraph graph;
 	ProPepNode node;
 	public Vector< TreeSet<ProPepNode> >	subGraphList=null;
 	Collection<ProPepNode> nodeSet = null;

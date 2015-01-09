@@ -107,14 +107,15 @@ public class ProPepNode extends AdjacencyListNode implements Comparable<ProPepNo
 	
 	}
 	
-	public MsMsProteinHit getProteinHit() throws Exception{
-		if (this.hasAttribute("proteinHit"))
+	public MsMsProteinHit getProteinHit(){
+		
 		return this.getAttribute("proteinHit");
-		else throw new Exception("Wrong class");
 	}
 	
-	public MsMsPeptideHit getPeptideHit(){
+	public MsMsPeptideHit getPeptideHit() throws Exception{
+		if (this.hasAttribute("peptideHit"))
 		return this.getAttribute("peptideHit");
+		else throw new Exception("Wrong class");
 	}
 
 }
