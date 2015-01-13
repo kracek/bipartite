@@ -23,6 +23,10 @@ public class ProPepNode extends AdjacencyListNode implements Comparable<ProPepNo
 
 	// *** Constructor ***
 
+	/**
+	 * @param graph
+	 * @param id
+	 */
 	protected ProPepNode(AbstractGraph graph, String id) {
 		super(graph, id);
 		neighborMap = new HashMap<AbstractNode, TwoEdges>(
@@ -31,6 +35,9 @@ public class ProPepNode extends AdjacencyListNode implements Comparable<ProPepNo
 
 	// *** Helpers ***
 
+	/* (non-Javadoc)
+	 * @see org.graphstream.graph.implementations.AdjacencyListNode#locateEdge(org.graphstream.graph.Node, char)
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	protected <T extends Edge> T locateEdge(Node opposite, char type) {
@@ -40,6 +47,9 @@ public class ProPepNode extends AdjacencyListNode implements Comparable<ProPepNo
 		return (T)(type == I_EDGE ? ee.in : ee.out);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.graphstream.graph.implementations.AdjacencyListNode#removeEdge(int)
+	 */
 	@Override
 	protected void removeEdge(int i) {
 		AbstractNode opposite = edges[i].getOpposite(this);
@@ -56,6 +66,9 @@ public class ProPepNode extends AdjacencyListNode implements Comparable<ProPepNo
 
 	// *** Callbacks ***
 
+	/* (non-Javadoc)
+	 * @see org.graphstream.graph.implementations.AdjacencyListNode#addEdgeCallback(org.graphstream.graph.implementations.AbstractEdge)
+	 */
 	@Override
 	protected boolean addEdgeCallback(AbstractEdge edge) {
 		AbstractNode opposite = edge.getOpposite(this);
@@ -77,6 +90,9 @@ public class ProPepNode extends AdjacencyListNode implements Comparable<ProPepNo
 		return super.addEdgeCallback(edge);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.graphstream.graph.implementations.AdjacencyListNode#clearCallback()
+	 */
 	@Override
 	protected void clearCallback() {
 		neighborMap.clear();
@@ -85,6 +101,9 @@ public class ProPepNode extends AdjacencyListNode implements Comparable<ProPepNo
 
 	// *** Others ***
 
+	/* (non-Javadoc)
+	 * @see org.graphstream.graph.implementations.AbstractNode#getNeighborNodeIterator()
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Node> Iterator<T> getNeighborNodeIterator() {
@@ -92,12 +111,18 @@ public class ProPepNode extends AdjacencyListNode implements Comparable<ProPepNo
 				.iterator();
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
 	@Override
 	public int compareTo(ProPepNode node0) {
 		int diff = -1;
 		if (this.hasAttribute("proteinHit")) { 
 				if ( node0.hasAttribute("proteinHit")) {
-		//	diff = -( ((MsMsProteinHit) this.getAttribute("proteinHit")).getPeptidesCount() - ((MsMsProteinHit) node0.getAttribute("proteinHit")).getPeptidesCount() );
+				// diff = -( ((MsMsProteinHit)
+				// this.getAttribute("proteinHit")).getPeptidesCount() -
+				// ((MsMsProteinHit)
+				// node0.getAttribute("proteinHit")).getPeptidesCount() );
 					diff = -(  this.getDegree() - node0.getDegree() );
 				if ( diff == 0)
 					diff = -1;
@@ -107,15 +132,23 @@ public class ProPepNode extends AdjacencyListNode implements Comparable<ProPepNo
 	
 	}
 	
+	/**
+	 * @return
+	 */
 	public MsMsProteinHit getProteinHit(){
 		
 		return this.getAttribute("proteinHit");
 	}
 	
+	/**
+	 * @return
+	 * @throws Exception
+	 */
 	public MsMsPeptideHit getPeptideHit() throws Exception{
 		if (this.hasAttribute("peptideHit"))
 		return this.getAttribute("peptideHit");
 		else throw new Exception("Wrong class");
 	}
+	
 
 }

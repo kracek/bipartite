@@ -1,36 +1,61 @@
 package mscanlib.ms.mass.bipartite;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 import mscanlib.ms.msms.MsMsProteinHit;
 
+/** Klasa reprezentujaca metabialko
+ * @author pawel.kracki
+ *
+ */
 public class MetaProtein {
 
 	public final static int ID_LENGTH=6;
 	
 	private String			mId="";
 	private String			mName="";
-	public HashMap<String, MsMsProteinHit>	mProteinsList=null;
+	public HashMap<String, MsMsProteinHit>	mProteinsMap=null;
 	
+	/**
+	 * Domyslny konstruktor
+	 */
 	public MetaProtein()
 	{
-		this.mProteinsList=new HashMap<String, MsMsProteinHit>();
+		this.mProteinsMap=new HashMap<String, MsMsProteinHit>();
 	}
 	
+	/** Konstruktor
+	 * @param id id metabialka
+	 */
 	public MetaProtein(int id)
 	{
 		this.mId=this.nr2id(id);
 		this.setName();
-		this.mProteinsList=new HashMap<String, MsMsProteinHit>();
+		this.mProteinsMap=new HashMap<String, MsMsProteinHit>();
 	}
 	
+	/** Konstruktor
+	 * @param proteinHit MsMsProteinHit, który znajduje sie w podanym Metabialku
+	 */
+	public MetaProtein(MsMsProteinHit proteinHit) {
+		
+		this.mProteinsMap=new HashMap<String, MsMsProteinHit>();
+		this.mProteinsMap.put(proteinHit.getId(), proteinHit);
+		
+	}
+
+	/** Metoda tworzy identyfikator z liczby
+	 * @param id
+	 * @return przerobiony identyfikator
+	 */
 	private String nr2id(int id)
 	{
 		StringBuffer	str=null;
 		String			numStr=null;
 		int				lenDiff=0;
 
-		str=new StringBuffer("MB");
+		str=new StringBuffer("MP");
 		numStr=String.valueOf(id);
 		lenDiff=MetaProtein.ID_LENGTH-numStr.length();
 
@@ -42,6 +67,9 @@ public class MetaProtein {
 	}
 	
 	
+	/**
+	 *  Metoda dodaje Prefiks do nazwy
+	 */
 	public void setName()
 	{
 		StringBuffer	str=null;
@@ -62,14 +90,17 @@ public class MetaProtein {
 	}
 	
 	
+	/** Metoda dodaje MsMsProteinHit do listy w MetaProtein
+	 * @param protein
+	 * @return true if ok
+	 */
 	public boolean addProtein(MsMsProteinHit protein)
 	{
-		if(this.mProteinsList.containsValue(protein))
+		if(this.mProteinsMap.containsValue(protein))
 			return(false);
 		else
 		{
-//			protein.addFamily(this);
-			this.mProteinsList.put(protein.getId(), protein);
+			this.mProteinsMap.put(protein.getId(), protein);
 		}
 		return(true);
 	}
@@ -81,21 +112,41 @@ public class MetaProtein {
 	 */
 	public int getProteinCount()
 	{
-		return(this.mProteinsList.size());
+		return(this.mProteinsMap.size());
 	}
 	
 	
+	/** 
+	 * Metoda zwraca MsMsProteinHit pod podanym indeksem
+	 * @param index
+	 * @return
+	 */
 	public MsMsProteinHit getProtein(int index)
 	{
 		MsMsProteinHit currentProtein=null;
 
-		if (index>=0 && index<this.mProteinsList.size())
-			currentProtein=(MsMsProteinHit)this.mProteinsList.values().toArray()[index];
+		if (index>=0 && index<this.mProteinsMap.size())
+			currentProtein=(MsMsProteinHit)this.mProteinsMap.values().toArray()[index];
 
 		return(currentProtein);
 	}
 	
+	/** Metoda zwraca nazwe metabialka
+	 * @return
+	 */
 	public String getName() {
 		return mName;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString(){
+		Iterator <MsMsProteinHit> iterator = mProteinsMap.values().iterator();
+		String list = "";
+		while (iterator.hasNext()){
+			list = list + ", " + iterator.next().getId();
+		}
+		return list;
 	}
 }

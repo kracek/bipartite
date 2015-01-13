@@ -1,109 +1,82 @@
 package mscanlib.ms.mass.bipartite;
 
-import java.util.Iterator;
-import java.util.TreeSet;
 import java.util.Vector;
 
 import mscanlib.ms.msms.MsMsProteinHit;
 
-
+/** Klasa realizujace algorytm pokrycia wierzcholkowego
+ * @author pawel.kracki
+ *
+ */
 public class VertexCover {
-	ProPepNode node;
-	int minDegree = 200;
-	public Vector<Vector<MsMsProteinHit>>findCover( ProPepGraph graph, GraphSeparator graphSepar){
-		Vector<Vector<MsMsProteinHit>> cover = new Vector<Vector<MsMsProteinHit>>();
 
+
+	/** Metoda rozbija graf zgodnie z algorytmem pokrycia wierzcholkow
+	 * @param graph graf do rozbicia
+	 * @param graphSepar klasa reprezentujaca podgrafy
+	 * @return vektor rodzin metabialek
+	 */
+	@SuppressWarnings("rawtypes")
+	public static Vector<Vector<MetaProtein>> findCover(ProPepGraph graph,
+			Vector<Vector<ProPepNode>> subGraphVector) {
 		
-		Iterator <TreeSet<ProPepNode>> iterator = graphSepar.subGraphList.iterator();
-		while (iterator.hasNext()){
-			TreeSet<ProPepNode> subGraph = iterator.next();
-			Vector<MsMsProteinHit> proteinVector = new Vector<MsMsProteinHit>();
+		
+		ProPepNode node;
+		Vector<Vector<MetaProtein>> cover = new Vector<Vector<MetaProtein>>();
+
+	//	graphSepar.groupNodes();
+
+		int j = 0;
+		while (j < subGraphVector.size()) {
+			Vector<ProPepNode> subGraph = subGraphVector.get(j);
+			
+			Vector<MetaProtein> proteinVector = new Vector<MetaProtein>();
 			cover.add(proteinVector);
-			Iterator <ProPepNode> vertexIterator = subGraph.iterator();
-			while (vertexIterator.hasNext()){
-				node = vertexIterator.next();
-				System.out.println(node.getDegree());
-				
-				
-				if (node.hasAttribute("peptideHit") || node.getDegree() < minDegree) break;   // drugi warunek potrzebny tylko do wizualizacji
-				
-				proteinVector.add((MsMsProteinHit) node.getAttribute("proteinHit"));
+			
+			int proteinCount = GraphSeparator.countMetaProteins(subGraph);
+			for (int i = 0; i < proteinCount;) {
+
+				node = subGraph.get(0);
+				if (node.hasAttribute("peptideHit")) {
+					System.out.println("Peptide Found");
+					break; // drugi warunek potrzebny tylko do wizualizacji de facto nie powinien tu wchodzic
+
+				}
+				// nie dodaje bialek, ktore maja 0 krawedzi po redukcji
+				if (node.hasAttribute("proteinHit") && node.getDegree() > 0) {
+					proteinVector.add(new MetaProtein((MsMsProteinHit) node
+							.getAttribute("proteinHit")));
+				}
+				else if (node.hasAttribute("proteinGroup") && node.getDegree() > 0) {
+					 proteinVector.add((MetaProtein) node.getAttribute("proteinGroup"));
+				}else {
+					if ((node.hasAttribute("proteinHit") || node.hasAttribute("proteinGroup")) && node.getDegree() == 0) 
+						System.out.println("Node not saved: " + node.getId() );
+				}
+
+				@SuppressWarnings("unchecked")
+				Vector<ProPepNode> set = new Vector(node.neighborMap.keySet());
+
+				for (int k = 0; k < set.size(); k++) {
+
+					ProPepNode node1 = set.get(k);
+					// usun peptydy polaczone z bialkiem - krawedzie usuna sie z automatu
+					subGraph.remove(node1);
+
+					graph.removeNode(node1);
+					
+				}
+				subGraph.remove(node);
 				graph.removeNode(node);
+				proteinCount--;
 			}
+		//	System.out.println("Po processingu: " + graphSepar.countMetaProteins(subGraph) + " , vector: " + proteinVector.size());
+			j++;
 		}
-		
-		
+
 		return cover;
 	}
-	
-	TreeSet<ProPepNode> reorder(TreeSet<ProPepNode> oldSet){
-		
-		TreeSet<ProPepNode> newSet = new TreeSet<ProPepNode>();
-		newSet.addAll(oldSet);
-		return newSet;
-	}
-	
-	void groupNodes (TreeSet<ProPepNode> currSet, GraphSeparator graphSepar){
-		if (currSet.size()<2) return;
-		
-		
-		Iterator <TreeSet<ProPepNode>> iterator = graphSepar.subGraphList.iterator();
-		Iterator <ProPepNode> nodeIterator = currSet.iterator();
-		ProPepNode node0;
-		ProPepNode node1;
 
-		while (nodeIterator.hasNext()){
-			node0 = nodeIterator.next();
-			node1 = nodeIterator.next();
-			if (node0.hasAttribute("peptideHit") || node1.hasAttribute("peptideHit")) break;
-			
-			if (checkNodeGroup(node0,node1)){
-				
-				/// join nodes function
-				
-				Vector<MsMsProteinHit> proteinGroup = new Vector<MsMsProteinHit>();
-				proteinGroup.add(node0.getProteinHit());
-				proteinGroup.add(node1.getProteinHit());
-				
-				
-				node0.addAttribute("proteinGroup", proteinGroup);
-				node0.removeAttribute("proteinHit");
-				node1.getGraph().removeNode(node1);
-				
-				//
-			}
-		}
-	}
-	
-	boolean checkNodeGroup (ProPepNode node0, ProPepNode node1){
-		
-		if (node0.hasAttribute("peptideHit") || node1.hasAttribute("peptideHit")) return false;
-		
-		ProPepNode nodeCmp;
-		
-		if (node0.getDegree() == node1.getDegree()){
-			Iterator <ProPepNode> neighborNodeIterator = node0.getNeighborNodeIterator();
-		
-			while (neighborNodeIterator.hasNext()){
-				nodeCmp = neighborNodeIterator.next();
-				if (!node1.hasEdgeBetween(nodeCmp)) {
-					return false;
-				}
-			}
-		}
-	return true;
-}
+
 
 }
-
-
-/*
-		try{
-			graph.write(new FileSinkDGS(), "tmp");
-			
-			this.temporaryGraph.read("tmp");
-			new File("tmp").delete();
-			}catch (Exception ex){
-				System.out.println("error in write " + ex.toString());
-			}
-*/

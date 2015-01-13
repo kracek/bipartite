@@ -13,21 +13,21 @@ public class ProPepGraph extends AdjacencyListGraph {
 	 * @param id
 	 *            Unikalny identyfikator grafu.
 	 * @param strictChecking
-	 *            If true any non-fatal error throws an exception.
+	 *            If true zaden non-fatal error nie rzuca wyjatkiem.
 	 * @param autoCreate
-	 *            If true (and strict checking is false), nodes are
-	 *            automatically created when referenced when creating a edge,
-	 *            even if not yet inserted in the graph.
+	 *            If true (and strict checking is false), wezly sa
+	 *            automatycznie tworzone kiedy tworzona krawedz sie do niego odnosi,
+	 *            nawet jezeli nie sa jeszcze wstawione w graf.
 	 * @param initialNodeCapacity
-	 *            Initial capacity of the node storage data structures. Use this
-	 *            if you know the approximate maximum number of nodes of the
-	 *            graph. The graph can grow beyond this limit, but storage
-	 *            reallocation is expensive operation.
+	 *            Poczatkowa pojemnosc struktur danych dla wezlow. Uzyj tego
+	 * 			  jesli znasz przyblizona maksymalna liczbe wezlow
+	 *  		  grafu.Graf moze sie rozwijac poza tym limitem, ale realokacja 
+	 *			  jest kosztowna operacja.
 	 * @param initialEdgeCapacity
-	 *            Initial capacity of the edge storage data structures. Use this
-	 *            if you know the approximate maximum number of edges of the
-	 *            graph. The graph can grow beyond this limit, but storage
-	 *            reallocation is expensive operation.
+	 *            Poczatkowa pojemnosc struktur danych dla krawedzi. Uzyj tego
+	 * 			  jesli znasz przyblizona maksymalna liczbe krawedzi
+	 *  		  grafu.Graf moze sie rozwijac poza tym limitem, ale realokacja 
+	 *			  jest kosztowna operacja.
 	 */
 	public ProPepGraph(String id, boolean strictChecking, boolean autoCreate,
 			int initialNodeCapacity, int initialEdgeCapacity) {
@@ -42,16 +42,16 @@ public class ProPepGraph extends AdjacencyListGraph {
 	}
 
 	/**
-	 * Creates an empty graph with default edge and node capacity.
+	 * Tworzy pusty graf z domyslna pojemnoscia krawedzi i wezlow.
 	 * 
 	 * @param id
-	 *            Unique identifier of the graph.
+	 *            Unikalny identyfikator grafu.
 	 * @param strictChecking
-	 *            If true any non-fatal error throws an exception.
+	 *            If true zaden non-fatal error nie rzuca wyjatkiem.
 	 * @param autoCreate
-	 *            If true (and strict checking is false), nodes are
-	 *            automatically created when referenced when creating a edge,
-	 *            even if not yet inserted in the graph.
+	 *            If true (and strict checking is false), wezly sa
+	 *            automatycznie tworzone kiedy tworzona krawedz sie do niego odnosi,
+	 *            nawet jezeli nie sa jeszcze wstawione w graf.
 	 */
 	public ProPepGraph(String id, boolean strictChecking, boolean autoCreate) {
 		this(id, strictChecking, autoCreate, DEFAULT_NODE_CAPACITY,
@@ -59,10 +59,10 @@ public class ProPepGraph extends AdjacencyListGraph {
 	}
 
 	/**
-	 * Creates an empty graph with strict checking and without auto-creation.
+	 * Tworzy pusty graf z strict checking i bez auto-creation.
 	 * 
 	 * @param id
-	 *            Unique identifier of the graph.
+	 *            Unikalny identyfikator grafu.
 	 */
 	public ProPepGraph(String id) {
 		this(id, true, false);
